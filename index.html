@@ -1,0 +1,1751 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>صفحه کاربري دانشجويي</title>
+  
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#4f46e5">
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --primary-color: #4f46e5;
+      --secondary-color: #10b981;
+      --text-color: #1f2937;
+    }
+    body {
+      font-family: "Vazirmatn", sans-serif;
+      color: var(--text-color);
+      background-color: #f3f4f6;
+    }
+    .btn-primary {
+      background-color: var(--primary-color);
+      transition: background-color 0.2s;
+    }
+    .btn-primary:hover {
+      background-color: #4338ca;
+    }
+    .btn-secondary {
+      background-color: var(--secondary-color);
+      transition: background-color 0.2s;
+    }
+    .btn-secondary:hover {
+      background-color: #059669;
+    }
+    .tab-active {
+      border-color: var(--primary-color);
+      color: var(--primary-color);
+      font-weight: 700;
+    }
+    .card {
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+    }
+    .hidden { display: none !important; }
+
+    /* Custom Scrollbar for better UX */
+    .custom-scroll::-webkit-scrollbar {
+        width: 8px;
+        height: 8px;
+    }
+    .custom-scroll::-webkit-scrollbar-thumb {
+        background-color: #9ca3af;
+        border-radius: 10px;
+    }
+    .custom-scroll::-webkit-scrollbar-track {
+        background: #e5e7eb;
+    }
+
+    /* Auth View specific styling for centering */
+    .auth-container {
+        max-width: 450px;
+        margin: 4rem auto;
+        padding: 0 1rem; /* Added padding for small screens */
+    }
+
+    /* Mobile optimization for tabs */
+    .nav-tabs {
+        overflow-x: auto;
+        white-space: nowrap;
+        -webkit-overflow-scrolling: touch;
+        border-bottom: 2px solid #e5e7eb;
+        /* Hides scrollbar on some browsers */
+        -ms-overflow-style: none; /* IE and Edge */
+        scrollbar-width: none; /* Firefox */
+    }
+    .nav-tabs::-webkit-scrollbar {
+        display: none; /* Chrome, Safari and Opera */
+    }
+    .tab-button {
+        flex-shrink: 0; /* Prevents buttons from shrinking on mobile */
+    }
+    
+    /* Responsive Grade Progress bar */
+    .progress-bar {
+        height: 8px;
+        border-radius: 4px;
+        background-color: #e5e7eb;
+    }
+    .progress-fill {
+        height: 100%;
+        border-radius: 4px;
+        transition: width 0.5s ease-in-out;
+    }
+
+  </style>
+</head>
+<body class="p-4 md:p-8">
+
+  <div id="message-box" class="fixed top-4 left-1/2 transform -translate-x-1/2 z-50 p-4 rounded-lg shadow-xl text-white font-medium hidden"></div>
+
+  <div id="loading-overlay" class="fixed inset-0 bg-gray-500 bg-opacity-75 flex items-center justify-center z-50">
+    <div class="bg-white p-6 rounded-xl shadow-2xl flex items-center space-x-3 space-x-reverse">
+      <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
+      <p class="text-indigo-700 text-lg font-medium" id="loading-text">در حال راه‌اندازی...</p>
+    </div>
+  </div>
+
+
+  <div id="auth-view" class="auth-container">
+    
+    <div id="login-form-container" class="bg-white p-6 md:p-8 card rounded-xl transition duration-300">
+        <h2 class="text-2xl md:text-3xl font-bold text-indigo-700 mb-6 text-center">ورود به داشبورد</h2>
+        <form id="login-form" class="space-y-4">
+            <div>
+                <label for="login-email" class="block text-sm font-medium text-gray-700">ایمیل</label>
+                <input type="email" id="login-email" required class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-3 border">
+            </div>
+            <div class="relative">
+                <label for="login-password" class="block text-sm font-medium text-gray-700">رمز عبور</label>
+                <input type="password" id="login-password" required class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-3 border">
+               
+                <span onclick="togglePasswordVisibility('login-password')" class="absolute inset-y-0 left-0 flex items-center pl-3 cursor-pointer mt-6">
+                    <i id="login-password-toggle" class="fas fa-eye text-gray-500 hover:text-indigo-600"></i>
+                </span>
+            </div>
+            <button type="submit" class="btn-primary text-white py-3 px-4 rounded-lg w-full text-lg font-semibold">
+                
+                <i class="fas fa-sign-in-alt ml-2"></i>ورود
+            </button>
+        </form>
+        <p class="mt-6 text-center text-sm">
+            <button onclick="showAuthForm('register')" class="text-indigo-600 hover:text-indigo-800 font-medium">حساب کاربری ندارید؟
+            ثبت نام کنید</button>
+        </p>
+        <p class="mt-2 text-center text-sm">
+            <button onclick="showAuthForm('forgot-password')" class="text-red-500 hover:text-red-700 font-medium">فراموشی رمز عبور</button>
+        </p>
+    </div>
+
+    <div id="register-form-container" class="bg-white p-6 md:p-8 card rounded-xl hidden transition duration-300">
+        <h2 class="text-2xl md:text-3xl font-bold text-indigo-700 mb-6 text-center">ثبت نام کاربر جدید</h2>
+        <form id="register-form" class="space-y-4">
+  
+            <div>
+                <label for="register-email" class="block text-sm font-medium text-gray-700">ایمیل</label>
+                <input type="email" id="register-email" required class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-3 border">
+            </div>
+            <div class="relative">
+               
+                <label for="register-password" class="block text-sm font-medium text-gray-700">رمز عبور (حداقل ۶ کاراکتر)</label>
+                <input type="password" id="register-password" required minlength="6" class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-3 border">
+                <span onclick="togglePasswordVisibility('register-password')" class="absolute inset-y-0 left-0 flex items-center pl-3 cursor-pointer mt-6">
+                    <i id="register-password-toggle" class="fas fa-eye text-gray-500 hover:text-indigo-600"></i>
+          
+                </span>
+            </div>
+            <button type="submit" class="btn-primary text-white py-3 px-4 rounded-lg w-full text-lg font-semibold">
+                <i class="fas fa-user-plus ml-2"></i>ثبت نام
+            </button>
+        </form>
+        <p class="mt-6 text-center text-sm">
+          
+            <button onclick="showAuthForm('login')" class="text-indigo-600 hover:text-indigo-800 font-medium">قبلاً ثبت نام کرده‌اید؟
+            ورود</button>
+        </p>
+    </div>
+
+    <div id="forgot-password-container" class="bg-white p-6 md:p-8 card rounded-xl hidden transition duration-300">
+        <h2 class="text-2xl md:text-3xl font-bold text-indigo-700 mb-6 text-center">بازیابی رمز عبور</h2>
+        <p class="text-center text-gray-600 mb-6">ایمیل خود را وارد کنید تا لینک بازیابی برایتان ارسال شود.</p>
+        <form id="forgot-password-form" class="space-y-4">
+            <div>
+        
+                <label for="forgot-email" class="block text-sm font-medium text-gray-700">ایمیل</label>
+                <input type="email" id="forgot-email" required class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-3 border">
+            </div>
+            <button type="submit" class="btn-primary text-white py-3 px-4 rounded-lg w-full text-lg font-semibold">
+                <i class="fas fa-envelope ml-2"></i>ارسال لینک بازیابی
+    
+            </button>
+        </form>
+        <p class="mt-6 text-center text-sm">
+            <button onclick="showAuthForm('login')" class="text-indigo-600 hover:text-indigo-800 font-medium">بازگشت به صفحه ورود</button>
+        </p>
+    </div>
+
+  </div> <div id="dashboard-view" class="hidden">
+    <header class="mb-6 p-4 bg-white card rounded-xl flex justify-between items-center flex-wrap gap-4">
+  
+        <div>
+        <h1 class="text-2xl md:text-3xl font-extrabold text-indigo-700 mb-1">داشبورد دانشجویی من</h1>
+        <p class="text-gray-500 text-sm md:text-base mb-3">مدیریت دروس، نمرات، برنامه‌ریزی هفتگی، امتحانات و محاسبه معدل.</p>
+        <div id="user-info-display" class="text-xs text-gray-400 font-mono overflow-x-auto whitespace-nowrap">در حال بارگذاری اطلاعات کاربر...</div>
+      </div>
+      <button onclick="signOutUser()" class="bg-red-500 hover:bg-red-700 text-white py-2 px-3 rounded-lg font-medium flex items-center text-sm md:text-base">
+ 
+        <i class="fas fa-sign-out-alt ml-2"></i>خروج
+      </button>
+    </header>
+
+    <nav class="mb-6">
+      <ul class="flex nav-tabs">
+        <li class="mr-1">
+          <button onclick="changeTab('overview')" class="tab-button inline-block py-2 px-4 text-gray-500 hover:text-indigo-600 hover:border-indigo-600 border-b-2 border-transparent transition duration-150 tab-active text-sm md:text-base" data-tab="overview">
+            <i class="fas fa-chart-line ml-2"></i>خلاصه و معدل
+    
+          </button>
+        </li>
+        <li class="mr-1">
+          <button onclick="changeTab('courses')" class="tab-button inline-block py-2 px-4 text-gray-500 hover:text-indigo-600 hover:border-indigo-600 border-b-2 border-transparent transition duration-150 text-sm md:text-base" data-tab="courses">
+            <i class="fas fa-book-open ml-2"></i>مدیریت دروس و نمرات
+          </button>
+        </li>
+        <li class="mr-1">
+       
+          <button onclick="changeTab('weekly')" class="tab-button inline-block py-2 px-4 text-gray-500 hover:text-indigo-600 hover:border-indigo-600 border-b-2 border-transparent transition duration-150 text-sm md:text-base" data-tab="weekly">
+            <i class="fas fa-calendar-alt ml-2"></i>برنامه‌ریزی هفتگی
+          </button>
+        </li>
+        <li class="mr-1">
+          <button onclick="changeTab('exams')" class="tab-button inline-block py-2 px-4 text-gray-500 hover:text-indigo-600 hover:border-indigo-600 border-b-2 border-transparent transition duration-150 text-sm md:text-base" data-tab="exams">
+            <i class="fas 
+            fa-calendar-check ml-2"></i>امتحانات و رویدادها
+          </button>
+        </li>
+      </ul>
+    </nav>
+
+    <section id="overview" class="tab-content">
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+        <div class="lg:col-span-2 bg-white p-6 card rounded-xl">
+          <h2 class="text-xl md:text-2xl font-bold text-gray-700 mb-4 border-b pb-2">خلاصه معدل</h2>
+          <div class="flex flex-col sm:flex-row items-center justify-between mb-6 gap-4">
+            <div class="text-center p-4 bg-indigo-50 rounded-lg w-full sm:w-auto">
+              <p class="text-4xl md:text-5xl font-extrabold text-indigo-600" id="total-gpa">--</p>
+   
+              <p class="text-gray-500 text-sm">معدل کل</p>
+            </div>
+            <div class="flex flex-wrap gap-4 w-full sm:w-auto justify-around sm:justify-start">
+              <div class="text-center p-3 bg-green-50 rounded-lg flex-1 min-w-[40%]">
+             
+                <p class="text-xl md:text-2xl font-bold text-green-600" id="total-units">--</p>
+                <p class="text-xs text-gray-500">کل واحدها</p>
+              </div>
+              <div class="text-center p-3 bg-red-50 rounded-lg flex-1 min-w-[40%]">
+                <p class="text-xl md:text-2xl font-bold text-red-600" id="passed-units">--</p>
+                <p class="text-xs 
+                text-gray-500">واحدهای گذرانده</p>
+              </div>
+            </div>
+          </div>
+
+          <h3 class="text-lg md:text-xl font-semibold text-gray-700 mt-6 mb-3">تاریخچه ترم‌ها</h3>
+          <div class="overflow-x-auto custom-scroll">
+            <table class="min-w-full bg-white rounded-lg border 
+            border-gray-200">
+              <thead>
+                <tr class="bg-gray-100 text-right text-gray-600 text-sm leading-normal">
+                  <th class="py-3 px-4 md:px-6">ترم</th>
+                  <th class="py-3 px-4 md:px-6">تعداد واحد</th>
+                  <th class="py-3 px-4 md:px-6">معدل 
+                  ترم</th>
+                </tr>
+              </thead>
+              <tbody class="text-gray-600 text-sm font-light" id="terms-gpa-list">
+                <tr><td colspan="3" class="text-center py-4">داده‌ای یافت نشد.</td></tr>
+       
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="bg-white p-6 card rounded-xl">
+          <h2 class="text-xl md:text-2xl font-bold text-gray-700 mb-4 border-b pb-2">مدیریت ترم‌ها</h2>
+          <form id="term-form" class="space-y-4">
+         
+            <div>
+              <label for="new-term-name" class="block text-sm font-medium text-gray-700">نام ترم (مثال: نیمسال اول ۱۴۰۲)</label>
+              <input type="text" id="new-term-name" required class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2 border">
+            </div>
+            <button type="submit" class="btn-primary text-white py-3 px-4 rounded-lg w-full text-sm md:text-base">
+             
+              <i class="fas fa-calendar-plus ml-2"></i>اضافه کردن ترم
+            </button>
+          </form>
+
+          <h3 class="text-lg md:text-xl font-semibold text-gray-700 mt-6 mb-3 border-t pt-4">لیست ترم‌ها</h3>
+          <ul id="term-list" class="space-y-2 max-h-60 overflow-y-auto custom-scroll">
+            <li class="text-gray-500 text-sm">ترم فعالی تعریف نشده 
+            است.</li>
+          </ul>
+        </div>
+
+      </div>
+    </section>
+
+    <section id="courses" class="tab-content hidden">
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+        <div class="bg-white p-6 card 
+        rounded-xl lg:col-span-1 order-last lg:order-first">
+          <h2 class="text-xl md:text-2xl font-bold text-gray-700 mb-4 border-b pb-2" id="course-form-title">افزودن درس جدید</h2>
+          <form id="course-form" class="space-y-4">
+            <input type="hidden" id="course-id">
+            <div>
+              <label for="course-name" class="block text-sm font-medium text-gray-700">نام درس</label>
+              <input type="text" id="course-name" required class="mt-1 
+              block w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2 border">
+            </div>
+            <div>
+              <label for="course-professor" class="block text-sm font-medium text-gray-700">نام استاد</label>
+              <input type="text" id="course-professor" class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2 border" placeholder="نام استاد درس (اختیاری)">
+            </div>
+      
+            <div class="grid grid-cols-2 gap-4">
+              <div>
+                <label for="course-units" class="block text-sm font-medium text-gray-700">تعداد واحد</label>
+                <input type="number" id="course-units" min="0.5" step="0.5" required class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2 border">
+              </div>
+          
+              <div>
+                <label for="course-term" class="block text-sm font-medium text-gray-700">ترم</label>
+                <select id="course-term" required class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2 border">
+                  <option value="">ترم را انتخاب کنيد</option>
+                </select>
+         
+              </div>
+            </div>
+            <div>
+              <label for="course-grade" class="block text-sm font-medium text-gray-700">نمره کسب شده (اختیاری)</label>
+              <input type="number" id="course-grade" min="0" max="20" step="0.01" class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2 border" placeholder="برای محاسبه معدل، نمره را وارد کنید.">
+            </div>
+ 
+            <div>
+              <label for="course-description" class="block text-sm font-medium text-gray-700">توضیحات (اختیاری)</label>
+              <textarea id="course-description" rows="3" class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2 border" placeholder="یادداشت‌های شخصی، منابع مهم یا نکات کلیدی"></textarea>
+            </div>
+            <button type="submit" id="add-course-btn" class="btn-primary text-white py-3 px-4 rounded-lg w-full text-sm md:text-base">
+  
+              <i class="fas fa-plus ml-2"></i>اضافه کردن درس
+            </button>
+            <button type="button" id="cancel-edit-btn" onclick="resetCourseForm()" class="btn-secondary text-white py-3 px-4 rounded-lg w-full hidden text-sm md:text-base">
+              <i class="fas fa-times ml-2"></i>انصراف از ویرایش
+            </button>
+          </form>
+      
+        </div>
+
+        <div class="bg-white p-6 card rounded-xl lg:col-span-2 order-first lg:order-last">
+          <h2 class="text-xl md:text-2xl font-bold text-gray-700 mb-4 border-b pb-2">لیست دروس</h2>
+
+          <div class="mb-4 flex flex-col sm:flex-row sm:space-x-4 sm:space-x-reverse items-start sm:items-center">
+            <label for="term-filter" class="text-sm font-medium text-gray-700 whitespace-nowrap 
+            mb-2 sm:mb-0">فیلتر ترم:</label>
+            <select id="term-filter" onchange="renderCoursesList()" class="rounded-lg border-gray-300 shadow-sm p-2 border w-full sm:w-auto">
+              <option value="all">همه ترم‌ها</option>
+            </select>
+          </div>
+
+          <div class="overflow-x-auto custom-scroll">
+         
+            <table class="min-w-full bg-white rounded-lg border border-gray-200">
+              <thead>
+                <tr class="bg-gray-100 text-right text-gray-600 text-sm leading-normal">
+                  <th class="py-3 px-4 md:px-6">نام درس</th>
+                  <th class="py-3 px-4 md:px-6">استاد</th>
+              
+                  <th class="py-3 px-4 md:px-6">واحد</th>
+                  <th class="py-3 px-4 md:px-6">ترم</th>
+                  <th class="py-3 px-4 md:px-6">نمره</th>
+                  <th class="py-3 px-4 md:px-6">وضعیت</th>
+                  <th class="py-3 px-4 md:px-6">عملیات</th>
+         
+                </tr>
+              </thead>
+              <tbody class="text-gray-600 text-xs md:text-sm font-light" id="courses-list">
+                <tr><td colspan="7" class="text-center py-4">درسی یافت نشد.</td></tr>
+              </tbody>
+  
+            </table>
+          </div>
+
+          <div id="details-modal" class="fixed inset-0 bg-gray-600 bg-opacity-75 flex items-center justify-center z-50 hidden">
+            <div class="bg-white p-6 rounded-xl shadow-2xl w-full max-w-lg mx-4">
+              <h3 id="modal-course-name" class="text-xl font-bold text-indigo-700 mb-3 border-b pb-2"></h3>
+    
+              <div class="space-y-3">
+                <p class="text-sm"><span class="font-medium text-gray-600">استاد:</span> <span id="modal-course-professor"></span></p>
+                <p class="text-sm"><span class="font-medium text-gray-600">ترم:</span> <span id="modal-course-term"></span></p>
+                <p class="text-sm font-medium text-gray-700 border-t pt-3 mt-3">توضیحات:</p>
+                <p id="modal-course-description" class="p-3 bg-gray-50 rounded-lg whitespace-pre-wrap text-gray-600"></p>
+   
+              </div>
+              <button onclick="closeModal()" class="mt-6 btn-primary text-white py-2 px-4 rounded-lg w-full">بستن</button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <section id="weekly" class="tab-content hidden">
+      <div class="bg-white p-6 card rounded-xl">
+ 
+          <h2 class="text-xl md:text-2xl font-bold text-gray-700 mb-4 border-b pb-2">برنامه‌ریزی هفتگی</h2>
+
+          <div class="mb-6 flex flex-col sm:flex-row sm:space-x-4 sm:space-x-reverse items-start sm:items-center">
+            <label for="weekly-term-filter" class="text-sm font-medium text-gray-700 whitespace-nowrap mb-2 sm:mb-0">فیلتر ترم:</label>
+            <select id="weekly-term-filter" onchange="renderWeeklySchedule()" class="rounded-lg border-gray-300 shadow-sm p-2 border w-full sm:w-auto">
+            
+              <option value="all">همه ترم‌ها</option>
+            </select>
+          </div>
+
+          <h3 class="text-lg md:text-xl font-semibold text-gray-700 mb-3">اضافه کردن زمان‌بندی هفتگی برای درس</h3>
+          <form id="schedule-form" class="space-y-4 mb-6 p-4 border rounded-lg bg-gray-50">
+            <div>
+           
+              <label for="schedule-course" class="block text-sm font-medium text-gray-700">درس</label>
+              <select id="schedule-course" required class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2 border">
+                <option value="">درس را انتخاب کنيد</option>
+              </select>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+    
+              <div>
+                <label for="schedule-day" class="block text-sm font-medium text-gray-700">روز</label>
+                <select id="schedule-day" required class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2 border">
+                  <option value="">روز را انتخاب کنيد</option>
+                  <option 
+                  value="شنبه">شنبه</option>
+                  <option value="یکشنبه">یکشنبه</option>
+                  <option value="دوشنبه">دوشنبه</option>
+                  <option value="سه‌شنبه">سه‌شنبه</option>
+                  <option value="چهارشنبه">چهارشنبه</option>
+                  <option value="پنجشنبه">پنجشنبه</option>
+     
+                  <option value="جمعه">جمعه</option>
+                </select>
+              </div>
+              <div class="col-span-1 sm:col-span-2">
+                <label for="schedule-start-time" class="block text-sm font-medium text-gray-700">ساعت شروع</label>
+                <input type="time" id="schedule-start-time" required class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2 border">
+              </div>
+              <input type="hidden" id="schedule-end-time" value="00:00">
+            </div>
+            <button type="submit" class="btn-primary text-white py-3 px-4 rounded-lg w-full 
+            text-sm md:text-base">
+              <i class="fas fa-clock ml-2"></i>ثبت برنامه
+            </button>
+          </form>
+
+
+          <div class="overflow-x-auto custom-scroll">
+            <table class="min-w-full bg-white rounded-lg border border-gray-200">
+           
+              <thead>
+                <tr class="bg-gray-100 text-right text-gray-600 text-xs md:text-sm leading-normal whitespace-nowrap">
+                  <th class="py-3 px-3 md:px-6 w-1/7">شنبه</th>
+                  <th class="py-3 px-3 md:px-6 w-1/7">یکشنبه</th>
+                  <th class="py-3 px-3 md:px-6 w-1/7">دوشنبه</th>
+        
+                  <th class="py-3 px-3 md:px-6 w-1/7">سه‌شنبه</th>
+                  <th class="py-3 px-3 md:px-6 w-1/7">چهارشنبه</th>
+                  <th class="py-3 px-3 md:px-6 w-1/7">پنجشنبه</th>
+                  <th class="py-3 px-3 md:px-6 w-1/7">جمعه</th>
+                </tr>
+    
+              </thead>
+              <tbody class="text-gray-600 text-xs font-light" id="weekly-schedule-body">
+                </tbody>
+            </table>
+          </div>
+
+      </div>
+  
+    </section>
+    
+    <section id="exams" class="tab-content hidden">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            
+            <div class="bg-white p-6 card rounded-xl lg:col-span-1 order-last lg:order-first">
+                <h2 class="text-xl 
+                md:text-2xl font-bold text-gray-700 mb-4 border-b pb-2">ثبت رویداد جدید</h2>
+                <form id="exam-form" class="space-y-4">
+                    <input type="hidden" id="exam-id">
+                    <div>
+                        <label for="exam-course" class="block text-sm font-medium text-gray-700">درس مرتبط</label>
+   
+                        <select id="exam-course" required class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2 border">
+                            <option value="">درس را انتخاب کنيد</option>
+                        </select>
+           
+                    </div>
+                    <div>
+                        <label for="exam-type" class="block text-sm font-medium text-gray-700">نوع رویداد</label>
+                        <select id="exam-type" required class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2 border">
+     
+                            <option value="نهایی">امتحان نهایی</option>
+                            <option value="میان‌ترم">میان‌ترم</option>
+                            <option value="کوییز">کوییز/پرسش کلاسی</option>
+                
+                            <option value="پروژه">پروژه/تکلیف</option>
+                            <option value="سایر">سایر</option>
+                        </select>
+                    </div>
+              
+                    <div>
+                        <label for="exam-name" class="block text-sm font-medium text-gray-700">توضیح/نام (اختیاری)</label>
+                        <input type="text" id="exam-name" class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2 border" placeholder="مثلاً: کوئیز فصل اول">
+                    </div>
+    
+                    <div>
+                        <label for="exam-date" class="block text-sm font-medium text-gray-700">تاریخ رویداد</label>
+                        <input type="date" id="exam-date" required class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2 border">
+                 
+                    </div>
+                    <div>
+                        <label for="exam-weight" class="block text-sm font-medium text-gray-700">وزن در نمره نهایی درس (درصد)</label>
+                        <input type="number" id="exam-weight" min="0" max="100" step="1" required class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2 border" placeholder="مثال: ۴۰">
+ 
+                    </div>
+                    <button type="submit" id="add-exam-btn" class="btn-primary text-white py-3 px-4 rounded-lg w-full text-sm md:text-base">
+                      <i class="fas fa-plus ml-2"></i>ثبت رویداد
+                    </button>
+                    <button type="button" id="cancel-exam-edit-btn" onclick="resetExamForm()" class="btn-secondary text-white py-3 px-4 rounded-lg w-full hidden text-sm md:text-base">
+                      <i class="fas fa-times ml-2"></i>انصراف از ویرایش
+                    </button>
+                </form>
+            </div>
+            
+            <div class="bg-white p-6 card rounded-xl lg:col-span-2 order-first lg:order-last">
+                <h2 class="text-xl md:text-2xl font-bold text-gray-700 mb-4 border-b pb-2">رویدادها و امتحانات پیش‌رو</h2>
+                <div class="mb-4 flex flex-col sm:flex-row sm:space-x-4 sm:space-x-reverse items-start sm:items-center">
+                    <label for="exam-term-filter" class="text-sm font-medium text-gray-700 whitespace-nowrap mb-2 sm:mb-0">فیلتر ترم:</label>
+                    <select id="exam-term-filter" onchange="renderExamsList()" class="rounded-lg border-gray-300 shadow-sm p-2 border w-full sm:w-auto">
+                        <option value="all">همه ترم‌ها</option>
+                    </select>
+                </div>
+                <div id="exams-list" class="space-y-4">
+                    <p class="text-center py-4 text-gray-500">هیچ رویدادی برای نمایش وجود ندارد.</p>
+                    </div>
+            </div>
+        </div>
+    </section>
+
+
+  </div> <script type="module">
+    // --- Firebase Setup ---
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+    import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, sendPasswordResetEmail, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+    import { getFirestore, doc, collection, onSnapshot, setDoc, updateDoc, deleteDoc, setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+    // --- HARDCODED FIREBASE CONFIGURATION ---
+    const firebaseConfig = {
+      apiKey: "AIzaSyB5qX596rhI5tszzF_k2B3fX95lIvR_eDE",
+      authDomain: "student-4f362.firebaseapp.com",
+      projectId: "student-4f362",
+      storageBucket: "student-4f362.firebasestorage.app",
+      messagingSenderId: "256541012363",
+      appId: "1:256541012363:web:d7e629ec248d11bce13f8e",
+      measurementId: "G-JZ69LTL6EF"
+    };
+    const appId = firebaseConfig.appId;
+    // ----------------------------------------
+    
+    let app, db, auth;
+    let userId = null;
+    let userEmail = null;
+    let courses = [];
+    let terms = [];
+
+    // Utility function to show custom messages (replaces alert())
+    function displayMessage(message, type = 'info') {
+      const box = document.getElementById('message-box');
+      box.textContent = message;
+      // Ensure box resets position and visibility for mobile UX
+      box.className = 'fixed top-4 left-1/2 transform -translate-x-1/2 z-50 p-3 md:p-4 rounded-lg shadow-xl text-white font-medium text-sm md:text-base transition-all duration-300';
+      
+      if (type === 'success') {
+        box.classList.add('bg-green-500');
+      } else if (type === 'error') {
+        box.classList.add('bg-red-500');
+      } else {
+        box.classList.add('bg-indigo-500');
+      }
+
+      box.classList.remove('hidden');
+      setTimeout(() => {
+        box.classList.add('hidden');
+      }, 4000);
+    }
+
+    /**
+     * Toggles the visibility of the password field.
+     * @param {string} inputId - The ID of the password input field.
+     */
+    window.togglePasswordVisibility = function(inputId) {
+      const input = document.getElementById(inputId);
+      const icon = document.getElementById(`${inputId}-toggle`);
+      if (input.type === 'password') {
+        input.type = 'text';
+        icon.classList.remove('fa-eye');
+        icon.classList.add('fa-eye-slash');
+      } else {
+        input.type = 'password';
+        icon.classList.remove('fa-eye-slash');
+        icon.classList.add('fa-eye');
+      }
+    }
+
+    /**
+     * Generates the secure, user-scoped Firestore path for a collection.
+     * @param {string} collectionName - The name of the sub-collection (e.g., 'courses').
+     */
+    function getUserCollectionRef(collectionName) {
+      if (!userId) {
+        console.error("User ID is not set. Cannot access Firestore.");
+        return null;
+      }
+      // Private data path: /artifacts/{appId}/users/{userId}/{collectionName}
+      return collection(db, `artifacts/${appId}/users/${userId}/${collectionName}`);
+    }
+
+
+    // --- View Management ---
+
+    /**
+     * Switches between Auth View and Dashboard View.
+     * @param {string} view - 'auth' or 'dashboard'.
+     */
+    function switchView(view) {
+      document.getElementById('auth-view').classList.toggle('hidden', view === 'dashboard');
+      document.getElementById('dashboard-view').classList.toggle('hidden', view === 'auth');
+    }
+
+    /**
+     * Switches between login, register, and forgot password forms.
+     * @param {string} form - 'login', 'register', or 'forgot-password'.
+     */
+    window.showAuthForm = function(form) {
+      document.getElementById('login-form-container').classList.add('hidden');
+      document.getElementById('register-form-container').classList.add('hidden');
+      document.getElementById('forgot-password-container').classList.add('hidden');
+
+      if (form === 'login') {
+        document.getElementById('login-form-container').classList.remove('hidden');
+      } else if (form === 'register') {
+        document.getElementById('register-form-container').classList.remove('hidden');
+      } else if (form === 'forgot-password') {
+        document.getElementById('forgot-password-container').classList.remove('hidden');
+      }
+    }
+
+
+    // --- Firebase Authentication ---
+
+    /**
+     * Initializes Firebase and sets up the Auth State Listener.
+     */
+    function setupFirebase() {
+      try {
+        app = initializeApp(firebaseConfig);
+        db = getFirestore(app);
+        auth = getAuth(app);
+        setLogLevel('debug');
+
+        document.getElementById('loading-text').textContent = 'بررسی وضعیت ورود...';
+
+        onAuthStateChanged(auth, (user) => {
+          if (user) {
+            userId = user.uid;
+            userEmail = user.email;
+            console.log("User authenticated:", userId);
+            document.getElementById('user-info-display').innerHTML = `
+              <span class="text-indigo-600 font-semibold">${userEmail}</span> 
+              <span class="text-gray-400 block sm:inline"> | UID: ${userId.substring(0, 8)}...</span>
+            `;
+            switchView('dashboard');
+            loadAllDataListeners();
+          } else {
+            userId = null;
+            userEmail = null;
+            courses = [];
+            terms = [];
+            switchView('auth');
+            showAuthForm('login');
+            // Clear lists in case user logs out
+            document.getElementById('term-list').innerHTML = '<li class="text-gray-500 text-sm">ترم فعالی تعریف نشده است.</li>';
+            document.getElementById('courses-list').innerHTML = '<tr><td colspan="7" class="text-center py-4">درسی یافت نشد.</td></tr>';
+            document.getElementById('terms-gpa-list').innerHTML = '<tr><td colspan="3" class="text-center py-4">داده‌ای یافت نشد.</td></tr>';
+            document.getElementById('total-gpa').textContent = '--';
+            document.getElementById('total-units').textContent = '--';
+            document.getElementById('passed-units').textContent = '--';
+            console.log("User signed out or not logged in.");
+          }
+          document.getElementById('loading-overlay').classList.add('hidden');
+        });
+        
+        // Ensure initial view is correct for fast loads
+        if (!auth.currentUser) {
+            document.getElementById('loading-overlay').classList.add('hidden');
+            switchView('auth');
+            showAuthForm('login');
+        }
+
+      } catch (error) {
+        console.error("Firebase setup error:", error);
+        displayMessage('خطا در راه‌اندازی فایربیس. لطفا اتصال اینترنت خود را بررسی کنید.', 'error');
+        document.getElementById('loading-overlay').classList.add('hidden');
+      }
+    }
+
+
+    window.signOutUser = async function() {
+      if (confirm("آیا مطمئن هستید که می‌خواهید خارج شوید؟")) {
+        document.getElementById('loading-overlay').classList.remove('hidden');
+        document.getElementById('loading-text').textContent = 'در حال خروج...';
+        try {
+          await signOut(auth);
+          displayMessage('با موفقیت خارج شدید.', 'success');
+        } catch (error) {
+          console.error("Sign out error:", error);
+          displayMessage('خطا در خروج.', 'error');
+        } finally {
+          document.getElementById('loading-overlay').classList.add('hidden');
+        }
+      }
+    }
+
+    // Login handler
+    document.getElementById('login-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const email = document.getElementById('login-email').value;
+      const password = document.getElementById('login-password').value;
+
+      document.getElementById('loading-overlay').classList.remove('hidden');
+      document.getElementById('loading-text').textContent = 'در حال ورود...';
+
+      try {
+        await signInWithEmailAndPassword(auth, email, password);
+        displayMessage('ورود با موفقیت انجام شد!', 'success');
+        // onAuthStateChanged handles the view switch
+      } catch (error) {
+        console.error("Login error:", error);
+        let errorMessage = 'خطا در ورود. ایمیل یا رمز عبور اشتباه است.';
+        if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
+          errorMessage = 'ایمیل یا رمز عبور اشتباه است.';
+        }
+        displayMessage(errorMessage, 'error');
+      } finally {
+        // Delay to allow onAuthStateChanged to finish dashboard render
+        setTimeout(() => {
+          document.getElementById('loading-overlay').classList.add('hidden');
+        }, 300);
+      }
+    });
+
+    // Forgot Password handler
+    document.getElementById('forgot-password-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const email = document.getElementById('forgot-email').value;
+
+      document.getElementById('loading-overlay').classList.remove('hidden');
+      document.getElementById('loading-text').textContent = 'در حال ارسال لینک بازیابی...';
+
+      try {
+        await sendPasswordResetEmail(auth, email);
+        displayMessage('لینک بازیابی رمز عبور به ایمیل شما ارسال شد.', 'success');
+        showAuthForm('login');
+      } catch (error) {
+        console.error("Password reset error:", error);
+        displayMessage('خطا در ارسال لینک بازیابی. مطمئن شوید ایمیل صحیح است.', 'error');
+      } finally {
+        setTimeout(() => {
+          document.getElementById('loading-overlay').classList.add('hidden');
+        }, 300);
+      }
+    });
+
+    // Register handler
+    document.getElementById('register-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const email = document.getElementById('register-email').value;
+      const password = document.getElementById('register-password').value;
+
+      document.getElementById('loading-overlay').classList.remove('hidden');
+      document.getElementById('loading-text').textContent = 'در حال ثبت نام...';
+
+      try {
+        await createUserWithEmailAndPassword(auth, email, password);
+        displayMessage('ثبت نام با موفقیت انجام شد! وارد شدید.', 'success');
+        // showAuthForm('login'); // این خط حذف شد تا تداخلی با ورود خودکار و هدایت به داشبورد ایجاد نکند.
+      } catch (error) {
+        console.error("Registration error:", error);
+        let errorMessage = 'خطا در ثبت نام. لطفا مجددا تلاش کنید.';
+        if (error.code === 'auth/email-already-in-use') {
+          errorMessage = 'این ایمیل قبلاً ثبت نام شده است.';
+        }
+        displayMessage(errorMessage, 'error');
+      } finally {
+        // تأخیر ۳۰۰ میلی‌ثانیه برای اجازه دادن به رندر داشبورد
+        setTimeout(() => {
+          document.getElementById('loading-overlay').classList.add('hidden');
+        }, 300);
+      }
+    });
+
+    // --- Data Management (CRUD) ---
+
+    // Loads all user-specific data from Firestore (terms and courses)
+    // Sets up real-time listeners for updates
+    // This is called only after successful authentication.
+    function loadAllDataListeners() {
+      if (!userId) {
+        console.error("Cannot load data: User ID is null.");
+        return;
+      }
+      document.getElementById('loading-overlay').classList.remove('hidden');
+      document.getElementById('loading-text').textContent = 'در حال بارگذاری اطلاعات داشبورد...';
+
+      // 1. Terms Listener (Real-time updates)
+      onSnapshot(getUserCollectionRef('terms'), (snapshot) => {
+        terms = [];
+        snapshot.docs.forEach(doc => {
+          terms.push({ id: doc.id, ...doc.data() });
+        });
+        // Sort terms by name (optional: assuming a naming convention like 'نیمسال ۱')
+        terms.sort((a, b) => a.name.localeCompare(b.name, 'fa', { sensitivity: 'base' }));
+
+        console.log("Terms updated:", terms);
+        renderTermsList();
+        renderCourseTermSelects();
+        calculateGPA();
+
+        // After terms are loaded, load courses
+        if (courses.length === 0 && !document.getElementById('courses-list').dataset.loaded) {
+          // This check prevents re-triggering course load on *every* term update
+          console.log("Triggering initial course load...");
+          document.getElementById('courses-list').dataset.loaded = 'true';
+        }
+      }, (error) => {
+        console.error("Terms listener error:", error);
+        displayMessage('خطا در دریافت لیست ترم‌ها.', 'error');
+        document.getElementById('loading-overlay').classList.add('hidden');
+      });
+      
+
+      // 2. Courses Listener (Real-time updates)
+      onSnapshot(getUserCollectionRef('courses'), (snapshot) => {
+        courses = [];
+        snapshot.docs.forEach(doc => {
+          courses.push({ id: doc.id, ...doc.data(), exams: doc.data().exams || [] });
+        });
+
+        // Ensure course and exam data is ready
+        // Sort courses by term and name
+        courses.sort((a, b) => {
+          if (a.term !== b.term) {
+            return a.term.localeCompare(b.term, 'fa', { sensitivity: 'base' });
+          }
+          return a.name.localeCompare(b.name, 'fa', { sensitivity: 'base' });
+        });
+
+        console.log("Courses updated:", courses);
+        renderCoursesList();
+        renderWeeklySchedule();
+        renderExamsList();
+        calculateGPA();
+        document.getElementById('loading-overlay').classList.add('hidden');
+      }, (error) => {
+        console.error("Courses listener error:", error);
+        displayMessage('خطا در دریافت لیست دروس.', 'error');
+        document.getElementById('loading-overlay').classList.add('hidden');
+      });
+    }
+
+    /**
+     * Finds a term by its ID.
+     * @param {string} termId
+     * @returns {Object|null}
+     */
+    function getTermById(termId) {
+        return terms.find(t => t.id === termId) || null;
+    }
+
+
+    // --- Term Management Functions ---
+
+    // Handles form submission for adding/editing a term
+    document.getElementById('term-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const termName = document.getElementById('new-term-name').value.trim();
+
+      if (!termName) {
+        displayMessage('لطفاً نام ترم را وارد کنید.', 'error');
+        return;
+      }
+
+      document.getElementById('loading-overlay').classList.remove('hidden');
+      document.getElementById('loading-text').textContent = 'در حال ذخیره‌سازی ترم...';
+
+      try {
+        // Generate a new ID for the term
+        const newTermRef = doc(getUserCollectionRef('terms'));
+        
+        await setDoc(newTermRef, {
+          name: termName,
+          createdAt: new Date().toISOString()
+        });
+
+        displayMessage('ترم با موفقیت اضافه شد.', 'success');
+        document.getElementById('term-form').reset();
+      } catch (error) {
+        console.error("Error adding term:", error);
+        displayMessage(`خطا در افزودن ترم: ${error.message}`, 'error');
+      } finally {
+        document.getElementById('loading-overlay').classList.add('hidden');
+      }
+    });
+
+    /**
+     * Renders the list of terms in the Term Management card.
+     */
+    function renderTermsList() {
+      const listElement = document.getElementById('term-list');
+      listElement.innerHTML = '';
+      if (terms.length === 0) {
+        listElement.innerHTML = '<li class="text-gray-500 text-sm">ترم فعالی تعریف نشده است.</li>';
+        return;
+      }
+
+      terms.forEach(term => {
+        // Calculate GPA for this specific term
+        const termCourses = courses.filter(c => c.term === term.name && c.grade !== null);
+        const totalPoints = termCourses.reduce((sum, c) => sum + (c.grade * c.units), 0);
+        const totalUnits = termCourses.reduce((sum, c) => sum + c.units, 0);
+        const termGPA = totalUnits > 0 ? (totalPoints / totalUnits).toFixed(2) : '--';
+        const termUnitsCount = courses.filter(c => c.term === term.name).reduce((sum, c) => sum + c.units, 0);
+
+        const listItem = document.createElement('li');
+        listItem.className = 'flex justify-between items-center p-3 bg-gray-50 rounded-lg text-sm transition hover:bg-gray-100';
+        listItem.innerHTML = `
+          <span class="font-medium text-gray-700">${term.name} (${termUnitsCount} واحد)</span>
+          <div class="flex items-center space-x-2 space-x-reverse">
+            <span class="text-xs font-mono p-1 rounded-md text-white ${termGPA === '--' ? 'bg-gray-400' : 'bg-indigo-500'}">معدل: ${termGPA}</span>
+            <button onclick="deleteTerm('${term.id}', '${term.name}')" class="text-red-500 hover:text-red-700 p-1 rounded-full hover:bg-red-100 transition" title="حذف ترم">
+              <i class="fas fa-trash-alt text-xs"></i>
+            </button>
+          </div>
+        `;
+        listElement.appendChild(listItem);
+      });
+      renderTermsGPATable();
+    }
+
+    /**
+     * Renders the terms GPA history table in the Overview tab.
+     */
+    function renderTermsGPATable() {
+        const tableBody = document.getElementById('terms-gpa-list');
+        tableBody.innerHTML = '';
+
+        if (terms.length === 0) {
+            tableBody.innerHTML = '<tr><td colspan="3" class="text-center py-4">داده‌ای یافت نشد.</td></tr>';
+            return;
+        }
+
+        terms.forEach(term => {
+            const termCourses = courses.filter(c => c.term === term.name && c.grade !== null);
+            const totalPoints = termCourses.reduce((sum, c) => sum + (c.grade * c.units), 0);
+            const totalUnits = termCourses.reduce((sum, c) => sum + c.units, 0);
+            const termGPA = totalUnits > 0 ? (totalPoints / totalUnits).toFixed(2) : '--';
+            const termUnitsCount = courses.filter(c => c.term === term.name).reduce((sum, c) => sum + c.units, 0);
+
+
+            const row = document.createElement('tr');
+            row.className = 'border-b border-gray-200 hover:bg-gray-50';
+            row.innerHTML = `
+                <td class="py-3 px-4 md:px-6">${term.name}</td>
+                <td class="py-3 px-4 md:px-6">${termUnitsCount}</td>
+                <td class="py-3 px-4 md:px-6">
+                    <span class="font-bold ${termGPA >= 17 ? 'text-green-600' : termGPA >= 14 ? 'text-blue-600' : termGPA !== '--' ? 'text-red-600' : 'text-gray-500'}">${termGPA}</span>
+                </td>
+            `;
+            tableBody.appendChild(row);
+        });
+    }
+
+    /**
+     * Deletes a term and its associated courses.
+     * @param {string} termId - The ID of the term document.
+     * @param {string} termName - The name of the term.
+     */
+    window.deleteTerm = async function(termId, termName) {
+      if (!confirm(`آیا مطمئن هستید که می‌خواهید ترم "${termName}" و تمام دروس مرتبط با آن را حذف کنید؟ این عمل غیرقابل بازگشت است.`)) {
+        return;
+      }
+
+      document.getElementById('loading-overlay').classList.remove('hidden');
+      document.getElementById('loading-text').textContent = 'در حال حذف ترم و دروس مرتبط...';
+
+      try {
+        // 1. Delete associated courses
+        const coursesToDelete = courses.filter(c => c.term === termName);
+        const courseDeletionPromises = coursesToDelete.map(c => deleteDoc(doc(getUserCollectionRef('courses'), c.id)));
+        await Promise.all(courseDeletionPromises);
+
+        // 2. Delete the term document
+        await deleteDoc(doc(getUserCollectionRef('terms'), termId));
+
+        displayMessage('ترم و دروس مرتبط با موفقیت حذف شدند.', 'success');
+      } catch (error) {
+        console.error("Error deleting term:", error);
+        displayMessage(`خطا در حذف ترم: ${error.message}`, 'error');
+      } finally {
+        document.getElementById('loading-overlay').classList.add('hidden');
+      }
+    }
+
+
+    // --- Course Management Functions ---
+
+    /**
+     * Populates the Term select boxes in the Course and Weekly tabs.
+     */
+    function renderCourseTermSelects() {
+      const courseTermSelect = document.getElementById('course-term');
+      const termFilterSelect = document.getElementById('term-filter');
+      const weeklyTermFilterSelect = document.getElementById('weekly-term-filter');
+      const examTermFilterSelect = document.getElementById('exam-term-filter');
+      const scheduleCourseSelect = document.getElementById('schedule-course');
+      const examCourseSelect = document.getElementById('exam-course');
+
+
+      // Save current selected value
+      const currentSelectedTerm = courseTermSelect.value;
+      const currentFilteredTerm = termFilterSelect.value;
+      const currentWeeklyFilteredTerm = weeklyTermFilterSelect.value;
+      const currentExamFilteredTerm = examTermFilterSelect.value;
+      const currentScheduleCourse = scheduleCourseSelect.value;
+      const currentExamCourse = examCourseSelect.value;
+
+      // Clear all selects
+      [courseTermSelect, termFilterSelect, weeklyTermFilterSelect, examTermFilterSelect, scheduleCourseSelect, examCourseSelect].forEach(select => {
+          select.innerHTML = '';
+      });
+      
+      // Populate filters
+      [termFilterSelect, weeklyTermFilterSelect, examTermFilterSelect].forEach(select => {
+          const allOption = document.createElement('option');
+          allOption.value = 'all';
+          allOption.textContent = 'همه ترم‌ها';
+          select.appendChild(allOption);
+      });
+
+      // Add a default option for the form selects
+      const defaultCourseOption = document.createElement('option');
+      defaultCourseOption.value = '';
+      defaultCourseOption.textContent = 'ترم را انتخاب کنيد';
+      courseTermSelect.appendChild(defaultCourseOption);
+
+      const defaultScheduleOption = document.createElement('option');
+      defaultScheduleOption.value = '';
+      defaultScheduleOption.textContent = 'درس را انتخاب کنيد';
+      scheduleCourseSelect.appendChild(defaultScheduleOption.cloneNode(true));
+      examCourseSelect.appendChild(defaultScheduleOption.cloneNode(true)); // Reusing the same text
+
+      // Populate Term selects with available terms
+      terms.forEach(term => {
+        const option = document.createElement('option');
+        option.value = term.name;
+        option.textContent = term.name;
+
+        // Clone and append to all relevant selects
+        courseTermSelect.appendChild(option.cloneNode(true));
+        termFilterSelect.appendChild(option.cloneNode(true));
+        weeklyTermFilterSelect.appendChild(option.cloneNode(true));
+        examTermFilterSelect.appendChild(option.cloneNode(true));
+      });
+
+      // Populate Course selects (Weekly Schedule and Exams)
+      courses.forEach(course => {
+          const courseOption = document.createElement('option');
+          courseOption.value = course.id;
+          courseOption.textContent = `${course.name} (${course.term})`;
+          scheduleCourseSelect.appendChild(courseOption.cloneNode(true));
+          examCourseSelect.appendChild(courseOption.cloneNode(true));
+      });
+
+
+      // Restore selected values if they still exist
+      courseTermSelect.value = currentSelectedTerm;
+      termFilterSelect.value = currentFilteredTerm;
+      weeklyTermFilterSelect.value = currentWeeklyFilteredTerm;
+      examTermFilterSelect.value = currentExamFilteredTerm;
+      scheduleCourseSelect.value = currentScheduleCourse;
+      examCourseSelect.value = currentExamCourse;
+    }
+
+
+    // Handles form submission for adding/editing a course
+    document.getElementById('course-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const courseId = document.getElementById('course-id').value;
+      const name = document.getElementById('course-name').value.trim();
+      const professor = document.getElementById('course-professor').value.trim() || 'نامشخص';
+      const units = parseFloat(document.getElementById('course-units').value);
+      const term = document.getElementById('course-term').value;
+      const gradeInput = document.getElementById('course-grade').value;
+      const grade = gradeInput ? parseFloat(gradeInput) : null;
+      const description = document.getElementById('course-description').value.trim();
+
+      if (!name || !term || isNaN(units) || units <= 0) {
+        displayMessage('لطفاً نام درس، تعداد واحد و ترم را به درستی وارد کنید.', 'error');
+        return;
+      }
+      if (grade !== null && (isNaN(grade) || grade < 0 || grade > 20)) {
+        displayMessage('نمره باید بین ۰ تا ۲۰ باشد.', 'error');
+        return;
+      }
+
+      document.getElementById('loading-overlay').classList.remove('hidden');
+      document.getElementById('loading-text').textContent = courseId ? 'در حال ویرایش درس...' : 'در حال افزودن درس...';
+
+      const courseData = {
+        name,
+        professor,
+        units,
+        term,
+        grade,
+        description,
+        createdAt: new Date().toISOString() // Only set on creation
+      };
+
+      try {
+        if (courseId) {
+          // Find the existing course to preserve the exams array
+          const existingCourse = courses.find(c => c.id === courseId);
+          if (existingCourse) {
+            courseData.exams = existingCourse.exams || [];
+          }
+          await updateDoc(doc(getUserCollectionRef('courses'), courseId), courseData);
+          displayMessage('درس با موفقیت ویرایش شد.', 'success');
+        } else {
+          // Add a new course
+          courseData.exams = []; // Initialize exams array for new course
+          const newCourseRef = doc(getUserCollectionRef('courses'));
+          await setDoc(newCourseRef, courseData);
+          displayMessage('درس جدید با موفقیت اضافه شد.', 'success');
+        }
+        resetCourseForm();
+      } catch (error) {
+        console.error("Error saving course:", error);
+        displayMessage(`خطا در ذخیره‌سازی درس: ${error.message}`, 'error');
+      } finally {
+        document.getElementById('loading-overlay').classList.add('hidden');
+      }
+    });
+
+    /**
+     * Fills the course form for editing.
+     * @param {string} id - The ID of the course to edit.
+     */
+    window.editCourse = function(id) {
+      const course = courses.find(c => c.id === id);
+      if (!course) return;
+
+      document.getElementById('course-id').value = course.id;
+      document.getElementById('course-name').value = course.name;
+      document.getElementById('course-professor').value = course.professor === 'نامشخص' ? '' : course.professor;
+      document.getElementById('course-units').value = course.units;
+      document.getElementById('course-term').value = course.term;
+      document.getElementById('course-grade').value = course.grade !== null ? course.grade : '';
+      document.getElementById('course-description').value = course.description;
+
+      document.getElementById('course-form-title').textContent = `ویرایش درس: ${course.name}`;
+      document.getElementById('add-course-btn').innerHTML = '<i class="fas fa-save ml-2"></i>ذخیره تغییرات';
+      document.getElementById('cancel-edit-btn').classList.remove('hidden');
+    }
+
+    /**
+     * Resets the course form to the default 'Add New Course' state.
+     */
+    window.resetCourseForm = function() {
+      document.getElementById('course-form').reset();
+      document.getElementById('course-id').value = '';
+      document.getElementById('course-form-title').textContent = 'افزودن درس جدید';
+      document.getElementById('add-course-btn').innerHTML = '<i class="fas fa-plus ml-2"></i>اضافه کردن درس';
+      document.getElementById('cancel-edit-btn').classList.add('hidden');
+    }
+
+    /**
+     * Deletes a course.
+     * @param {string} id - The ID of the course to delete.
+     * @param {string} name - The name of the course (for confirmation).
+     */
+    window.deleteCourse = async function(id, name) {
+      if (!confirm(`آیا مطمئن هستید که می‌خواهید درس "${name}" و تمام برنامه‌ریزی‌ها و رویدادهای مرتبط با آن را حذف کنید؟`)) {
+        return;
+      }
+
+      document.getElementById('loading-overlay').classList.remove('hidden');
+      document.getElementById('loading-text').textContent = 'در حال حذف درس...';
+
+      try {
+        await deleteDoc(doc(getUserCollectionRef('courses'), id));
+        displayMessage('درس با موفقیت حذف شد.', 'success');
+        resetCourseForm();
+      } catch (error) {
+        console.error("Error deleting course:", error);
+        displayMessage(`خطا در حذف درس: ${error.message}`, 'error');
+      } finally {
+        document.getElementById('loading-overlay').classList.add('hidden');
+      }
+    }
+
+
+    /**
+     * Renders the list of courses in the Courses tab, applying the filter.
+     */
+    window.renderCoursesList = function() {
+      const listElement = document.getElementById('courses-list');
+      const filterValue = document.getElementById('term-filter').value;
+      listElement.innerHTML = '';
+
+      const filteredCourses = courses.filter(course => filterValue === 'all' || course.term === filterValue);
+
+      if (filteredCourses.length === 0) {
+        listElement.innerHTML = '<tr><td colspan="7" class="text-center py-4">درسی یافت نشد.</td></tr>';
+        return;
+      }
+
+      filteredCourses.forEach(course => {
+        const isPassed = course.grade !== null && course.grade >= 10;
+        const statusText = course.grade === null ? 'نامشخص' : isPassed ? 'قبول' : 'رد';
+        const statusClass = course.grade === null ? 'bg-gray-200 text-gray-700' : isPassed ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700';
+        const gradeDisplay = course.grade !== null ? course.grade.toFixed(2) : '--';
+        
+        const row = document.createElement('tr');
+        row.className = 'border-b border-gray-200 hover:bg-gray-50';
+        row.innerHTML = `
+          <td class="py-3 px-4 md:px-6 font-medium text-indigo-700 whitespace-nowrap">${course.name}</td>
+          <td class="py-3 px-4 md:px-6">${course.professor}</td>
+          <td class="py-3 px-4 md:px-6 font-mono">${course.units}</td>
+          <td class="py-3 px-4 md:px-6 text-gray-500">${course.term}</td>
+          <td class="py-3 px-4 md:px-6 font-bold ${isPassed ? 'text-green-600' : course.grade !== null ? 'text-red-600' : 'text-gray-500'}">${gradeDisplay}</td>
+          <td class="py-3 px-4 md:px-6">
+            <span class="inline-block py-1 px-3 rounded-full text-xs font-semibold ${statusClass}">${statusText}</span>
+          </td>
+          <td class="py-3 px-4 md:px-6 whitespace-nowrap">
+            <div class="flex items-center space-x-2 space-x-reverse">
+              <button onclick="editCourse('${course.id}')" class="text-blue-500 hover:text-blue-700" title="ویرایش">
+                <i class="fas fa-edit"></i>
+              </button>
+              <button onclick="deleteCourse('${course.id}', '${course.name}')" class="text-red-500 hover:text-red-700" title="حذف">
+                <i class="fas fa-trash-alt"></i>
+              </button>
+              ${course.description ? 
+              `<button onclick="openModal('${course.id}')" class="text-gray-500 hover:text-gray-700" title="توضیحات">
+                <i class="fas fa-info-circle"></i>
+              </button>` : ''}
+            </div>
+          </td>
+        `;
+        listElement.appendChild(row);
+      });
+
+      // Update the options for schedule and exam forms to reflect new courses
+      renderCourseTermSelects(); 
+    }
+
+    /**
+     * Opens the Course Details Modal.
+     * @param {string} courseId - The ID of the course.
+     */
+    window.openModal = function(courseId) {
+      const course = courses.find(c => c.id === courseId);
+      if (!course) return;
+
+      document.getElementById('modal-course-name').textContent = course.name;
+      document.getElementById('modal-course-professor').textContent = course.professor;
+      document.getElementById('modal-course-term').textContent = course.term;
+      document.getElementById('modal-course-description').textContent = course.description || 'توضیحات اضافی ثبت نشده است.';
+      document.getElementById('details-modal').classList.remove('hidden');
+    }
+
+    /**
+     * Closes the Course Details Modal.
+     */
+    window.closeModal = function() {
+      document.getElementById('details-modal').classList.add('hidden');
+    }
+
+
+    // --- GPA Calculation ---
+
+    /**
+     * Calculates the total GPA and updates the overview card.
+     */
+    function calculateGPA() {
+      // Filter out courses with no grades
+      const gradedCourses = courses.filter(c => c.grade !== null);
+
+      const totalPoints = gradedCourses.reduce((sum, c) => sum + (c.grade * c.units), 0);
+      const totalUnitsGraded = gradedCourses.reduce((sum, c) => sum + c.units, 0);
+      
+      const totalUnitsAll = courses.reduce((sum, c) => sum + c.units, 0);
+      const passedUnits = gradedCourses.filter(c => c.grade >= 10).reduce((sum, c) => sum + c.units, 0);
+
+      const overallGPA = totalUnitsGraded > 0 ? (totalPoints / totalUnitsGraded).toFixed(2) : '--';
+
+      document.getElementById('total-gpa').textContent = overallGPA;
+      document.getElementById('total-units').textContent = totalUnitsAll;
+      document.getElementById('passed-units').textContent = passedUnits;
+
+      renderTermsGPATable();
+    }
+
+
+    // --- Weekly Schedule Functions ---
+
+    // Handles form submission for adding a weekly schedule item
+    document.getElementById('schedule-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const courseId = document.getElementById('schedule-course').value;
+      const day = document.getElementById('schedule-day').value;
+      const startTime = document.getElementById('schedule-start-time').value;
+
+      if (!courseId || !day || !startTime) {
+        displayMessage('لطفاً درس، روز و ساعت شروع را انتخاب کنید.', 'error');
+        return;
+      }
+
+      document.getElementById('loading-overlay').classList.remove('hidden');
+      document.getElementById('loading-text').textContent = 'در حال ثبت برنامه هفتگی...';
+
+      const course = courses.find(c => c.id === courseId);
+      if (!course) {
+        displayMessage('خطا: درس انتخاب شده یافت نشد.', 'error');
+        document.getElementById('loading-overlay').classList.add('hidden');
+        return;
+      }
+
+      const scheduleItem = {
+        id: Date.now().toString(), // Simple unique ID for the item within the array
+        day,
+        startTime,
+        // Optional: Assuming a default 1.5 hour class duration if not provided
+        endTime: document.getElementById('schedule-end-time').value || calculateEndTime(startTime, 90),
+        courseId: courseId, // Store courseId for easy lookup
+        courseName: course.name,
+        term: course.term
+      };
+
+      // Retrieve existing schedule array or initialize a new one
+      const existingSchedules = course.schedules || [];
+      existingSchedules.push(scheduleItem);
+
+      try {
+        await updateDoc(doc(getUserCollectionRef('courses'), courseId), {
+          schedules: existingSchedules
+        });
+
+        displayMessage('برنامه هفتگی با موفقیت ثبت شد.', 'success');
+        document.getElementById('schedule-form').reset();
+        document.getElementById('schedule-course').value = ''; // Reset select to default
+        document.getElementById('schedule-day').value = '';
+      } catch (error) {
+        console.error("Error adding schedule item:", error);
+        displayMessage(`خطا در ثبت برنامه هفتگی: ${error.message}`, 'error');
+      } finally {
+        document.getElementById('loading-overlay').classList.add('hidden');
+      }
+    });
+
+    /**
+     * Calculates the end time given a start time and duration in minutes.
+     * @param {string} startTime - The start time in "HH:MM" format.
+     * @param {number} durationMinutes - The duration in minutes.
+     * @returns {string} The end time in "HH:MM" format.
+     */
+    function calculateEndTime(startTime, durationMinutes) {
+        const [hour, minute] = startTime.split(':').map(Number);
+        const start = new Date(2000, 0, 1, hour, minute);
+        start.setMinutes(start.getMinutes() + durationMinutes);
+        
+        const endHour = String(start.getHours()).padStart(2, '0');
+        const endMinute = String(start.getMinutes()).padStart(2, '0');
+        return `${endHour}:${endMinute}`;
+    }
+
+
+    /**
+     * Renders the weekly schedule table.
+     */
+    window.renderWeeklySchedule = function() {
+      const scheduleBody = document.getElementById('weekly-schedule-body');
+      const filterValue = document.getElementById('weekly-term-filter').value;
+      scheduleBody.innerHTML = '';
+      
+      const days = ["شنبه", "یکشنبه", "دوشنبه", "سه‌شنبه", "چهارشنبه", "پنجشنبه", "جمعه"];
+      const scheduleByDay = days.reduce((acc, day) => {
+        acc[day] = [];
+        return acc;
+      }, {});
+      
+      let hasSchedule = false;
+
+      // Aggregate all schedule items from filtered courses
+      courses
+        .filter(course => filterValue === 'all' || course.term === filterValue)
+        .forEach(course => {
+          (course.schedules || []).forEach(item => {
+            if (days.includes(item.day)) {
+                scheduleByDay[item.day].push({
+                    ...item,
+                    courseId: course.id,
+                    professor: course.professor
+                });
+                hasSchedule = true;
+            }
+          });
+      });
+
+      if (!hasSchedule) {
+        scheduleBody.innerHTML = `<tr><td colspan="7" class="text-center py-4 text-gray-500">برنامه‌ای برای نمایش یافت نشد.</td></tr>`;
+        return;
+      }
+
+      // Sort schedules within each day by start time
+      Object.keys(scheduleByDay).forEach(day => {
+        scheduleByDay[day].sort((a, b) => a.startTime.localeCompare(b.startTime));
+      });
+
+      // Find the maximum number of classes in any single day to determine the number of rows
+      const maxClassesPerDay = Math.max(...Object.values(scheduleByDay).map(arr => arr.length));
+      
+      for (let i = 0; i < maxClassesPerDay; i++) {
+        const row = document.createElement('tr');
+        row.className = 'border-b border-gray-200';
+        
+        days.forEach(day => {
+          const cell = document.createElement('td');
+          cell.className = 'py-3 px-3 md:px-6 align-top min-w-[120px] h-full';
+          
+          if (scheduleByDay[day][i]) {
+            const item = scheduleByDay[day][i];
+            cell.innerHTML = `
+              <div class="bg-indigo-50 p-3 rounded-lg border-r-4 border-indigo-500 shadow-sm space-y-1">
+                <p class="font-bold text-sm text-indigo-700">${item.courseName}</p>
+                <p class="text-xs text-gray-600 font-mono">${item.startTime} - ${item.endTime}</p>
+                <p class="text-xs text-gray-500">استاد: ${item.professor}</p>
+                <button onclick="deleteScheduleItem('${item.courseId}', '${item.id}', '${item.courseName}')" class="mt-1 text-red-500 hover:text-red-700 text-xs" title="حذف برنامه">
+                    <i class="fas fa-trash-alt ml-1"></i>حذف
+                </button>
+              </div>
+            `;
+          } else {
+            cell.innerHTML = '<div class="h-full"></div>'; // Empty cell placeholder
+          }
+          row.appendChild(cell);
+        });
+        scheduleBody.appendChild(row);
+      }
+    }
+
+    /**
+     * Deletes a schedule item from a course's schedules array.
+     * @param {string} courseId - The ID of the parent course.
+     * @param {string} scheduleId - The unique ID of the schedule item.
+     * @param {string} courseName - The name of the course (for confirmation).
+     */
+    window.deleteScheduleItem = async function(courseId, scheduleId, courseName) {
+      if (!confirm(`آیا مطمئن هستید که می‌خواهید این زمان‌بندی را از درس "${courseName}" حذف کنید؟`)) {
+        return;
+      }
+      
+      document.getElementById('loading-overlay').classList.remove('hidden');
+      document.getElementById('loading-text').textContent = 'در حال حذف برنامه...';
+
+      try {
+        const course = courses.find(c => c.id === courseId);
+        if (!course || !Array.isArray(course.schedules)) return;
+
+        const updatedSchedules = course.schedules.filter(item => item.id !== scheduleId);
+
+        await updateDoc(doc(getUserCollectionRef('courses'), courseId), {
+            schedules: updatedSchedules
+        });
+        displayMessage('برنامه با موفقیت حذف شد.', 'success');
+      } catch (error) {
+        console.error("Error deleting schedule item:", error);
+        displayMessage(`خطا در حذف برنامه: ${error.message}`, 'error');
+      } finally {
+        document.getElementById('loading-overlay').classList.add('hidden');
+      }
+    }
+
+
+    // --- Exam/Event Management Functions ---
+
+    // Handles form submission for adding an exam/event
+    document.getElementById('exam-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const examId = document.getElementById('exam-id').value; // Used for editing
+      const courseId = document.getElementById('exam-course').value;
+      const type = document.getElementById('exam-type').value;
+      const name = document.getElementById('exam-name').value.trim() || type;
+      const date = document.getElementById('exam-date').value;
+      const weight = parseFloat(document.getElementById('exam-weight').value);
+
+      if (!courseId || !type || !date || isNaN(weight) || weight <= 0 || weight > 100) {
+        displayMessage('لطفاً درس، نوع رویداد، تاریخ و وزن صحیح (۱ تا ۱۰۰) را وارد کنید.', 'error');
+        return;
+      }
+      
+      document.getElementById('loading-overlay').classList.remove('hidden');
+      document.getElementById('loading-text').textContent = examId ? 'در حال ویرایش رویداد...' : 'در حال ثبت رویداد...';
+
+      const course = courses.find(c => c.id === courseId);
+      if (!course) {
+        displayMessage('خطا: درس انتخاب شده یافت نشد.', 'error');
+        document.getElementById('loading-overlay').classList.add('hidden');
+        return;
+      }
+
+      const examItem = {
+        id: examId || Date.now().toString(),
+        type,
+        name,
+        date,
+        weight,
+        courseId,
+        courseName: course.name,
+        term: course.term
+      };
+
+      const existingExams = course.exams || [];
+      let updatedExams;
+
+      try {
+        if (examId) {
+          // Edit existing exam
+          updatedExams = existingExams.map(item => item.id === examId ? examItem : item);
+        } else {
+          // Add new exam
+          updatedExams = [...existingExams, examItem];
+        }
+
+        await updateDoc(doc(getUserCollectionRef('courses'), courseId), {
+          exams: updatedExams
+        });
+
+        displayMessage(examId ? 'رویداد با موفقیت ویرایش شد.' : 'رویداد جدید با موفقیت ثبت شد.', 'success');
+        resetExamForm();
+      } catch (error) {
+        console.error("Error saving exam item:", error);
+        displayMessage(`خطا در ذخیره‌سازی رویداد: ${error.message}`, 'error');
+      } finally {
+        document.getElementById('loading-overlay').classList.add('hidden');
+      }
+    });
+
+    /**
+     * Resets the exam form to the default 'Add New Event' state.
+     */
+    window.resetExamForm = function() {
+      document.getElementById('exam-form').reset();
+      document.getElementById('exam-id').value = '';
+      document.getElementById('exam-course').value = '';
+      document.getElementById('add-exam-btn').innerHTML = '<i class="fas fa-plus ml-2"></i>ثبت رویداد';
+      document.getElementById('cancel-exam-edit-btn').classList.add('hidden');
+    }
+
+
+    /**
+     * Fills the exam form for editing.
+     * @param {string} courseId - The ID of the parent course.
+     * @param {string} examId - The ID of the exam item.
+     */
+    window.editExam = function(courseId, examId) {
+      const course = courses.find(c => c.id === courseId);
+      if (!course || !Array.isArray(course.exams)) return;
+
+      const exam = course.exams.find(e => e.id === examId);
+      if (!exam) return;
+
+      document.getElementById('exam-id').value = exam.id;
+      document.getElementById('exam-course').value = courseId;
+      document.getElementById('exam-type').value = exam.type;
+      document.getElementById('exam-name').value = exam.name === exam.type ? '' : exam.name; // Don't pre-fill if name is just type
+      document.getElementById('exam-date').value = exam.date;
+      document.getElementById('exam-weight').value = exam.weight;
+      
+      document.getElementById('add-exam-btn').innerHTML = `<i class="fas fa-save ml-2"></i>ذخیره ویرایش`;
+      document.getElementById('cancel-exam-edit-btn').classList.remove('hidden');
+      // Scroll to form to make sure user sees it on mobile
+      document.getElementById('exam-form').scrollIntoView({ behavior: 'smooth' });
+    }
+
+
+    /**
+     * Renders the list of upcoming exams/events.
+     */
+    window.renderExamsList = function() {
+      const listElement = document.getElementById('exams-list');
+      const filterValue = document.getElementById('exam-term-filter').value;
+      listElement.innerHTML = '';
+
+      let allExams = [];
+      courses
+        .filter(course => filterValue === 'all' || course.term === filterValue)
+        .forEach(course => {
+          (course.exams || []).forEach(exam => {
+            allExams.push({ ...exam, courseId: course.id });
+          });
+        });
+
+      // Filter out past events and sort by date (closest first)
+      const today = new Date().toISOString().split('T')[0];
+      const upcomingExams = allExams
+        .filter(exam => exam.date >= today)
+        .sort((a, b) => a.date.localeCompare(b.date));
+
+      if (upcomingExams.length === 0) {
+        listElement.innerHTML = '<p class="text-center py-4 text-gray-500">هیچ رویداد پیش‌رویی برای نمایش وجود ندارد.</p>';
+        return;
+      }
+      
+      upcomingExams.forEach(exam => {
+        const examCard = document.createElement('div');
+        examCard.className = 'bg-white p-4 rounded-lg shadow-md border-r-4 border-red-500';
+        
+        // Calculate days left
+        const examDate = new Date(exam.date);
+        const todayDate = new Date(today);
+        const diffTime = examDate.getTime() - todayDate.getTime();
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        const daysLeft = diffDays === 0 ? 'امروز' : `${diffDays} روز باقی مانده`;
+
+        examCard.innerHTML = `
+            <div class="flex justify-between items-center mb-2">
+                <h3 class="text-lg font-bold text-gray-800">${exam.name}</h3>
+                <span class="text-xs font-semibold px-2 py-1 rounded-full ${diffDays <= 7 ? 'bg-red-100 text-red-700' : 'bg-indigo-100 text-indigo-700'}">${daysLeft}</span>
+            </div>
+            <p class="text-sm text-gray-600 mb-2">درس: <span class="font-medium text-indigo-600">${exam.courseName} (${exam.term})</span></p>
+            <div class="flex justify-between items-center text-xs text-gray-500 border-t pt-2">
+                <p>تاریخ: <span class="font-mono">${exam.date.split('-').reverse().join('/')}</span></p>
+                <p>وزن: <span class="font-mono text-red-600">${exam.weight}%</span></p>
+                <div class="flex space-x-2 space-x-reverse">
+                    <button onclick="editExam('${exam.courseId}', '${exam.id}')" class="text-blue-500 hover:text-blue-700" title="ویرایش رویداد">
+                        <i class="fas fa-edit"></i>
+                    </button>
+                    <button onclick="deleteExamItem('${exam.courseId}', '${exam.id}', '${exam.name}')" class="text-red-500 hover:text-red-700" title="حذف رویداد">
+                        <i class="fas fa-trash-alt"></i>
+                    </button>
+                </div>
+            </div>
+        `;
+        listElement.appendChild(examCard);
+      });
+    }
+
+    /**
+     * Deletes an exam item from a course's exams array.
+     * @param {string} courseId - The ID of the parent course.
+     * @param {string} examId - The unique ID of the exam item.
+     * @param {string} examName - The name of the exam (for confirmation).
+     */
+    window.deleteExamItem = async function(courseId, examId, examName) {
+      if (!confirm(`آیا مطمئن هستید که می‌خواهید رویداد "${examName}" را حذف کنید؟`)) {
+        return;
+      }
+      
+      document.getElementById('loading-overlay').classList.remove('hidden');
+      document.getElementById('loading-text').textContent = 'در حال حذف رویداد...';
+
+      try {
+        const course = courses.find(c => c.id === courseId);
+        if (!course || !Array.isArray(course.exams)) return;
+
+        const updatedExams = course.exams.filter(item => item.id !== examId);
+
+        await updateDoc(doc(getUserCollectionRef('courses'), courseId), {
+            exams: updatedExams
+        });
+        displayMessage('رویداد با موفقیت حذف شد.', 'success');
+      } catch (error) {
+        console.error("Error deleting exam item:", error);
+        displayMessage(`خطا در حذف رویداد: ${error.message}`, 'error');
+      } finally {
+        document.getElementById('loading-overlay').classList.add('hidden');
+      }
+    }
+  
+    // --- Tab Management ---
+
+    window.changeTab = function(tabId) {
+      document.querySelectorAll('.tab-content').forEach(content => {
+        content.classList.add('hidden');
+      });
+      document.getElementById(tabId).classList.remove('hidden');
+
+      document.querySelectorAll('.tab-button').forEach(button => {
+        button.classList.remove('tab-active');
+      });
+      document.querySelector(`.tab-button[data-tab="${tabId}"]`).classList.add('tab-active');
+
+      // Trigger renders when switching to ensure freshness
+      if (tabId === 'overview') {
+        calculateGPA();
+      } else if (tabId === 'courses') {
+        renderCoursesList();
+      } else if (tabId === 'weekly') {
+        renderWeeklySchedule(); 
+      } else if (tabId === 'exams') {
+        renderExamsList();
+      }
+    }
+    
+    // --- Initialization ---
+    document.addEventListener('DOMContentLoaded', () => {
+      setupFirebase();
+      
+      // PWA: Service Worker Registration (جدید)
+      if ('serviceWorker' in navigator) {
+          window.addEventListener('load', () => {
+              navigator.serviceWorker.register('/sw.js')
+                  .then(registration => {
+                      console.log('ServiceWorker registration successful with scope: ', registration.scope);
+                  })
+                  .catch(error => {
+                      console.log('ServiceWorker registration failed: ', error);
+                      displayMessage('خطا در نصب قابلیت‌های آفلاین (PWA).', 'error');
+                  });
+          });
+      }
+    });
+
+  </script>
+
+</body>
+</html>
