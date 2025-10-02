@@ -1726,6 +1726,8 @@
       }
     }
     
+  
+    
     // --- Initialization ---
     document.addEventListener('DOMContentLoaded', () => {
       setupFirebase();
@@ -1733,7 +1735,8 @@
       // PWA: Service Worker Registration (جدید)
       if ('serviceWorker' in navigator) {
           window.addEventListener('load', () => {
-              navigator.serviceWorker.register('/sw.js')
+              // مسیردهی برای سازگاری با GitHub Pages از /sw.js به ./sw.js تغییر کرد
+              navigator.serviceWorker.register('./sw.js') 
                   .then(registration => {
                       console.log('ServiceWorker registration successful with scope: ', registration.scope);
                   })
