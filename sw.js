@@ -4,15 +4,17 @@ const urlsToCache = [
   './', // صفحه اصلی (index.html)
   'index.html',
   'manifest.json',
+  // منابع ثابت خارجی
   'https://cdn.tailwindcss.com', // Tailwind CSS
-  'https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;700&display=swap', // Vazirmatn Font CSS
+  'https://fonts.googleapis.com/css2?family=Vazirmatn:wght=400;500;700&display=swap', // Vazirmatn Font CSS
   'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css', // Font Awesome
   'https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js', // Firebase SDK
   'https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js',
   'https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js',
-  // آیکون‌ها را نیز در اینجا اضافه کنید (اگر آن‌ها را ساخته‌اید)
-  '/icons/icon-192x192.png',
-  '/icons/icon-512x512.png'
+  // مسیرهای تصحیح شده برای آیکون‌ها (استفاده از ./ به جای /)
+  './icons/icon-72x72.png', 
+  './icons/icon-192x192.png',
+  './icons/icon-512x512.png'
 ];
 
 // رویداد نصب (Install Event): کش کردن منابع اصلی
